@@ -22,7 +22,7 @@
         .btn {
             margin: 5px;
             padding: 10px 15px;
-            background-color: #4CAF50;
+            background-color: #4c87af;
             color: white;
             border: none;
             border-radius: 5px;
@@ -84,7 +84,7 @@
 <body>
     <div id="quiz-container">
         <h1>Тест</h1>
-        <p id="welcome-text">Добро пожаловать! Нажмите "Начать", чтобы проверить свои знания.</p>
+       <p id="welcome-text">Добро пожаловать! Давай проверим твои знания про Димона.</p>
         
         <div id="question-container" style="display: none;">
             <h2 id="question"></h2>
@@ -105,28 +105,95 @@
     <script>
         // Массив с вопросами и ответами
         const questions = [
-            {
-                question: "Сколько будет 2+2?",
+          {
+                question: "Какой любимейший цвет у Димона?",
                 answers: [
-                    { text: "3", correct: false },
-                    { text: "4", correct: true },
-                    { text: "5", correct: false }
+                    { text: "Алый", correct: false },
+                    { text: "Лиловый", correct: false },
+                    { text: "Синий", correct: true },
+                    { text: "Фисташковый", correct: false }
                 ]
             },
             {
-                question: "Столица России?",
+                question: "Какой фастфудик выберет Димончик на фудкорте?",
                 answers: [
-                    { text: "Санкт-Петербург", correct: false },
-                    { text: "Москва", correct: true },
-                    { text: "Новосибирск", correct: false }
+                    { text: "Макшнакнес", correct: false },
+                    { text: "БК", correct: false },
+                    { text: "Франклинс", correct: true },
+                    { text: "Киэфси", correct: false },
+                    { text: "Крофка Картофка", correct: false }
                 ]
             },
             {
-                question: "Самая большая планета Солнечной системы?",
+                question: "По какой песне сохнет Димон?",
                 answers: [
-                    { text: "Земля", correct: false },
-                    { text: "Юпитер", correct: true },
-                    { text: "Сатурн", correct: false }
+                    { text: "Dame un Grrr (Fantomel, KATE LINN)", correct: false },
+                    { text: "MENTE MA (NAKAMA, MC Staff)", correct: false },
+                    { text: "Наследство (ICEGERGERT, SKY RAE)", correct: false },
+                    { text: "Наследство (Шоугерл, Кристос)", correct: true }
+                ]
+            },
+            {
+                question: "Сколько ложек кофи и кубиков сахара Он кладет в чашку?",
+                answers: [
+                    { text: "0,5 кофи и 1 кубик", correct: false },
+                    { text: "1 кофи и 1 кубик", correct: true },
+                    { text: "1 кофи и 1,5 кубика", correct: false },
+                    { text: "1,5 кофи и 1 кубик", correct: false },
+                    { text: "1,5 кофи и 1,5 кубика", correct: false }
+                ]
+            },
+            {
+                question: "Что Он кричит, когда оплачивает покупки приложением Сбербанка?",
+                answers: [
+                    { text: "Сосать Америка, сосать!", correct: true },
+                    { text: "Yessssssss!", correct: false },
+                    { text: "Ляпота!", correct: false }
+                ]
+            },
+            {
+                question: "Что Он выберет?",
+                answers: [
+                    
+                    { text: "Пон", correct: true },
+                    { text: "Ясно", correct: false },
+                    { text: "Услышал тебя, Родной!", correct: false }
+                ]
+            },
+            {
+                question: "Что больше всего любит этот ваш Димон?",
+                answers: [
+                    { text: "Чай", correct: true },
+                    { text: "Кофе", correct: false },
+                    { text: "Цикорий", correct: false }
+                ]
+            },
+            
+            {
+                question: "О каком отдыхе мечтает Димон в 2026 году?",
+                answers: [
+                    { text: "Лежать в кроватке", correct: false },
+                    { text: "Поехать в круиз по Европе", correct: true },
+                    { text: "Отправиться на лыжный курорт во Францию", correct: false },
+                    { text: "Отдых на Кубе", correct: false }
+                ]
+            },
+            {
+                question: "Где раньше жил Димон?",
+                answers: [
+                    { text: "В Избе", correct: false },
+                    { text: "В Икше", correct: true },
+                    { text: "В Истре", correct: false },
+                    { text: "В согласии и гармонии", correct: false },
+                    { text: "В Дмитрове", correct: false }
+                ]
+            },
+            {
+                question: "Какой стикер Он постоянно хочет сделать в свой стикерпак, но Шоугерл его постоянно забалтывает?",
+                answers: [
+                    { text: "Легендарный окей", correct: true },
+                    { text: "В стиле 'Um Grrr'", correct: false },
+                    { text: "Приветствие", correct: false }
                 ]
             }
         ];
@@ -137,10 +204,7 @@
         let userAnswers = [];
 
         // Получаем элементы со страницы
-        const startBtn = document.
-
-
-getElementById('start-btn');
+        const startBtn = document.getElementById('start-btn');
         const welcomeText = document.getElementById('welcome-text');
         const questionContainer = document.getElementById('question-container');
         const questionElement = document.getElementById('question');
@@ -183,7 +247,7 @@ getElementById('start-btn');
         function showQuestion() {
             resetState();
             const currentQuestion = questions[currentQuestionIndex];
-            questionElement.innerText = Вопрос ${currentQuestionIndex + 1}: ${currentQuestion.question};
+            questionElement.innerText = `Вопрос ${currentQuestionIndex + 1}: ${currentQuestion.question}`;
 
             currentQuestion.answers.forEach(answer => {
                 const button = document.createElement('button');
@@ -236,8 +300,7 @@ getElementById('start-btn');
             } else {
                 feedbackElement.textContent = "Писец! Ладно, идем дальше(";
                 feedbackElement.className = "feedback incorrect-feedback";
-
-}
+            }
 
             nextBtn.style.display = 'block';
         }
@@ -249,11 +312,11 @@ getElementById('start-btn');
 
             // Вариативные надписи в зависимости от результата
             if (score === questions.length) {
-                resultText.innerText = "Поздравляем! Вы гений! Идеальный результат!";
+                resultText.innerText = "Ты просто БОМБА! Идеальный результат! Скрин скинь мне в тг и переверни телефон для лучшего отображения таблицы.";
             } else if (score >= questions.length * 0.7) {
-                resultText.innerText = Поздравляем! Хороший результат! Вы ответили правильно на ${score} из ${questions.length} вопросов.;
+                resultText.innerText = `Харооооош! Ты ответила правильно на ${score} из ${questions.length} вопросов. Скрин скинь мне в тг и переверни телефон для лучшего отображения таблицы.`;
             } else {
-                resultText.innerText = Спасибо за прохождение! Вы ответили правильно на ${score} из ${questions.length} вопросов. Попробуйте еще раз!;
+                resultText.innerText = `Пойдет, Бро! Ты ответила правильно на ${score} из ${questions.length} вопросов. Скрин скинь мне в тг и переверни телефон для лучшего отображения таблицы.`;
             }
 
             // Создаем таблицу с результатами
