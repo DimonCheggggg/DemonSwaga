@@ -84,7 +84,7 @@
 <body>
     <div id="quiz-container">
         <h1>Тест</h1>
-       <p id="welcome-text">Давай узнаем какая ты СВАГА или СРАКА на самом деле!</p>
+       <p id="welcome-text">Давай узнаем кто ты: СВАГА или СРАКА</p>
         
         <div id="question-container" style="display: none;">
             <h2 id="question"></h2>
@@ -93,12 +93,12 @@
             <button id="next-btn" class="btn" style="display: none;">Next</button>
         </div>
 
-        <button id="start-btn" class="btn">поСВАГАЛИ</button>
+        <button id="start-btn" class="btn">поСВАГАли</button>
         
         <div id="result-container" style="display: none;">
             <h2 id="result-text"></h2>
             <div id="results-table"></div>
-            <button id="restart-btn" class="btn">Пройти тест снова</button>
+            <button id="restart-btn" class="btn">поСВАГАли снова</button>
         </div>
     </div>
 
@@ -125,12 +125,13 @@
                 ]
             },
             {
-                question: "По какой песне сохнет Димон?",
+                question: "Какую минеральную воду постоянно пьет Димон из бутылки?",
                 answers: [
-                    { text: "Dame un Grrr (Fantomel, KATE LINN)", correct: false },
-                    { text: "MENTE MA (NAKAMA, MC Staff)", correct: false },
-                    { text: "Наследство (ICEGERGERT, SKY RAE)", correct: false },
-                    { text: "Наследство (Шоугерл, Кристос)", correct: true }
+                    { text: "Святой источник (негазированная)", correct: true },
+                    { text: "Архыз (негазированная)", correct: false },
+                    { text: "Сенежская (газированная)", correct: false },
+                    { text: "Архыз (газированная)", correct: false },
+                    { text: "Святой источник (газированная)", correct: true }
                 ]
             },
             {
@@ -144,20 +145,21 @@
                 ]
             },
             {
-                question: "Что Он кричит, когда оплачивает покупки приложением Сбербанка?",
+                question: "Какого цвета глаза у Димона?",
                 answers: [
-                    { text: "Сосать Америка, сосать!", correct: true },
-                    { text: "Yessssssss!", correct: false },
-                    { text: "Ляпота!", correct: false }
+                    { text: "Голубого", correct: false },
+                    { text: "Карего", correct: false },
+                    { text: "Самого лучшего", correct: false },
+                    { text: "Зеленого", correct: true }
                 ]
             },
             {
-                question: "Что Он выберет?",
+                question: "Что Он будет делать в понедельник 15 сентября 2025 года?",
                 answers: [
-                    
-                    { text: "Пон", correct: true },
-                    { text: "Ясно", correct: false },
-                    { text: "Услышал тебя, Родной!", correct: false }
+                    { text: "Нихуя не будет делать. У него holidays", correct: true },
+                    { text: "Поедет на собеседование", correct: false },
+                    { text: "Будет с Сахаяной проходить обучение по видеотехнике на Петровке", correct: false },
+                    { text: "Поедет на Петровку на совещание", correct: false }
                 ]
             },
             {
