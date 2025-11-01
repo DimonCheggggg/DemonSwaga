@@ -22,4 +22,237 @@
     th { background:#f0f2f3; }
     input[type="number"] { width:56px; padding:4px; text-align:center; }
     input[type="text"] { width:180px; padding:6px; }
-    .row { display:flex; gap:12px; align-items:cent
+    .row { display:flex; gap:12px; align-items:center; flex-wrap:wrap; }
+    .hidden { display:none; }
+    .small { font-size:12px; color:#666; }
+    .standings-table td, .standings-table th { font-size:13px; text-align:center; }
+    footer { text-align:center; font-size:12px; color:#666; margin-top:14px; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">xGolub 🕊️</div>
+    <div class="small">Онлайн — в реальном времени</div>
+  </header>
+
+  <main>
+    <div class="controls">
+      <button id="showOddsBtn" class="btn-primary">Кэфы</button>
+      <button id="showTableBtn" class="btn-blue">Турнир</button>
+    </div>
+
+    <!-- ====== Odds Section ====== -->
+    <section id="oddsSection" class="panel">
+      <h3>Коэффициенты</h3>
+
+      <table id="oddsTable">
+        <thead>
+          <tr><th>Матч</th><th>П1</th><th>Ничья</th><th>П2</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+
+      <div style="text-align:center; margin-top:8px;">
+        <button id="calcOddsBtn" class="btn-primary">Рассчитать кэф</button>
+        <button id="randomOddsBtn" class="btn-blue">Рандомные кэфы</button>
+      </div>
+    </section>
+
+    <!-- ====== Tournament Section ====== -->
+    <section id="tournamentSection" class="panel hidden">
+      <h3>Турнир (4 команды)</h3>
+
+      <div class="row">
+        <div><div class="small">Саня</div><input id="team_sanya" type="text" placeholder="Название команды Сани"></div>
+        <div><div class="small">Олег</div><input id="team_oleg" type="text" placeholder="Название команды Олега"></div>
+        <div><div class="small">Дима</div><input id="team_dima" type="text" placeholder="Название команды Димы"></div>
+        <div><div class="small">Давид</div><input id="team_david" type="text" placeholder="Название команды Давида"></div>
+        <div style="margin-left:auto;">
+          <button id="showTournamentDataBtn" class="btn-gray">Показать турнир</button>
+          <button id="resetTournamentBtn" class="btn-red">Сбросить турнир</button>
+        </div>
+      </div>
+
+      <div id="tournamentData" class="hidden">
+        <div style="margin-top:12px;">
+          <strong>Матчи:</strong>
+          <table id="matchesTable">
+            <thead><tr><th>Матч</th><th>Голы хозяев</th><th>Голы гостей</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+
+        <div style="margin-top:12px;">
+          <strong>Таблица</strong>
+          <table class="standings-table" id="standingsTable">
+            <thead>
+              <tr><th>Команда</th><th>И</th><th>В</th><th>Н</th><th>П</th><th>ГЗ</th><th>ГП</th><th>Разн</th><th>Очки</th></tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <footer>© xGolub 2025</footer>
+  </main>
+
+<script>
+const firebaseConfig = {
+  apiKey: "ВАШ_API_KEY",
+  authDomain: "ВАШ_PROJECT.firebaseapp.com",
+  databaseURL: "https://ВАШ_PROJECT-default-rtdb.firebaseio.com",
+  projectId: "ВАШ_PROJECT",
+  storageBucket: "ВАШ_PROJECT.appspot.com",
+  messagingSenderId: "ВАШ_SENDER_ID",
+  appId: "ВАШ_APP_ID"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+const players = ["sanya","oleg","dima","david"];
+const defaults = { sanya:"Саня", oleg:"Олег", dima:"Дима", david:"Давид" };
+const matches = [
+  {id:"dima_sanya",home:"dima",away:"sanya"},
+  {id:"oleg_david",home:"oleg",away:"david"},
+  {id:"dima_oleg",home:"dima",away:"oleg"},
+  {id:"sanya_david",home:"sanya",away:"david"},
+  {id:"dima_david",home:"dima",away:"david"},
+  {id:"sanya_oleg",home:"sanya",away:"oleg"},
+];
+
+const showOddsBtn=document.getElementById("showOddsBtn");
+const showTableBtn=document.getElementById("showTableBtn");
+const oddsSection=document.getElementById("oddsSection");
+const tournamentSection=document.getElementById("tournamentSection");
+const oddsTableBody=document.querySelector("#oddsTable tbody");
+const calcOddsBtn=document.getElementById("calcOddsBtn");
+const randomOddsBtn=document.getElementById("randomOddsBtn");
+
+const teamInputs={
+  sanya:document.getElementById("team_sanya"),
+  oleg:document.getElementById("team_oleg"),
+  dima:document.getElementById("team_dima"),
+  david:document.getElementById("team_david")
+};
+
+const matchesTbody=document.querySelector("#matchesTable tbody");
+const standingsTbody=document.querySelector("#standingsTable tbody");
+const showTournamentDataBtn=document.getElementById("showTournamentDataBtn");
+const tournamentData=document.getElementById("tournamentData");
+const resetTournamentBtn=document.getElementById("resetTournamentBtn");
+
+showOddsBtn.onclick=()=>{oddsSection.classList.remove("hidden");tournamentSection.classList.add("hidden");};
+showTableBtn.onclick=()=>{tournamentSection.classList.remove("hidden");oddsSection.classList.add("hidden");};
+showTournamentDataBtn.onclick=()=>{tournamentData.classList.toggle("hidden");};
+
+// === Кэфы ===
+const fixedOdds={
+  "dima_sanya":[3.78,3.04,2.46],
+  "oleg_david":[1.85,3.25,4.75],
+  "dima_oleg":[3.45,3.10,2.40],
+  "sanya_david":[1.55,3.80,5.90],
+  "dima_david":[2.05,3.20,3.95],
+  "sanya_oleg":[1.85,3.05,2.05]
+};
+
+db.ref("odds").on("value",snap=>{
+  const odds=snap.val()||{};
+  oddsTableBody.innerHTML="";
+  for(let m of matches){
+    const v=odds[m.id]||["–","–","–"];
+    const tr=document.createElement("tr");
+    tr.innerHTML=`<td>${defaults[m.home]} - ${defaults[m.away]}</td>
+      <td>${num(v[0])}</td><td>${num(v[1])}</td><td>${num(v[2])}</td>`;
+    oddsTableBody.appendChild(tr);
+  }
+});
+function num(v){return (v==="–"||v==null)?"–":(+v).toFixed(2);}
+calcOddsBtn.onclick=()=>db.ref("odds").set(fixedOdds);
+randomOddsBtn.onclick=()=>{
+  const r={};for(let m of matches){r[m.id]=[rand(),rand(),rand()];}
+  db.ref("odds").set(r);
+};
+function rand(){return +(Math.random()*8.99+1).toFixed(2);}
+
+// === Турнир ===
+db.ref("teams").on("value",snap=>{
+  const t=snap.val()||defaults;
+  for(let p of players){
+    teamInputs[p].value=t[p]||defaults[p];
+  }
+  renderMatches();
+  renderStandings();
+});
+
+for(let p of players){
+  teamInputs[p].addEventListener("input",e=>{
+    db.ref("teams/"+p).set(e.target.value.trim()||defaults[p]);
+  });
+}
+
+db.ref("results").on("value",snap=>{
+  renderMatches(snap.val()||{});
+  renderStandings(snap.val()||{});
+});
+
+function renderMatches(results={}){
+  matchesTbody.innerHTML="";
+  const teams={};for(let p of players){teams[p]=teamInputs[p].value||defaults[p];}
+  for(let m of matches){
+    const r=results[m.id]||{home:"",away:""};
+    const tr=document.createElement("tr");
+    tr.innerHTML=`<td style="text-align:left">${teams[m.home]} — ${teams[m.away]}</td>
+      <td><input type="number" data-match="${m.id}" data-side="home" min="0" value="${r.home??""}"></td>
+      <td><input type="number" data-match="${m.id}" data-side="away" min="0" value="${r.away??""}"></td>`;
+    matchesTbody.appendChild(tr);
+  }
+  matchesTbody.querySelectorAll("input").forEach(i=>{
+    i.oninput=e=>{
+      const id=e.target.dataset.match, side=e.target.dataset.side;
+      const row=e.target.closest("tr");
+      const home=parseInt(row.querySelector('input[data-side="home"]').value)||"";
+      const away=parseInt(row.querySelector('input[data-side="away"]').value)||"";
+      db.ref("results/"+id).set({home,away});
+    };
+  });
+}
+
+resetTournamentBtn.onclick=()=>{
+  if(confirm("Сбросить турнир?")){
+    db.ref("results").set(null);
+    db.ref("teams").set(defaults);
+  }
+};
+
+function renderStandings(results={}){
+  const teams={};for(let p of players){teams[p]={name:teamInputs[p].value||defaults[p],P:0,W:0,D:0,L:0,GF:0,GA:0,GD:0,pts:0};}
+  for(let m of matches){
+    const r=results[m.id];if(!r||r.home===""||r.away==="")continue;
+    const h=r.home,a=r.away;
+    teams[m.home].P++;teams[m.away].P++;
+    teams[m.home].GF+=h;teams[m.home].GA+=a;
+    teams[m.away].GF+=a;teams[m.away].GA+=h;
+    if(h>a){teams[m.home].W++;teams[m.away].L++;teams[m.home].pts+=3;}
+    else if(h<a){teams[m.away].W++;teams[m.home].L++;teams[m.away].pts+=3;}
+    else{teams[m.home].D++;teams[m.away].D++;teams[m.home].pts++;teams[m.away].pts++;}
+  }
+  const arr=Object.values(teams).map(t=>(t.GD=t.GF-t.GA,t))
+    .sort((a,b)=>b.pts-a.pts||b.GD-a.GD||b.GF-a.GF);
+  standingsTbody.innerHTML="";
+  for(let t of arr){
+    const tr=document.createElement("tr");
+    tr.innerHTML=`<td style="text-align:left">${t.name}</td>
+      <td>${t.P}</td><td>${t.W}</td><td>${t.D}</td><td>${t.L}</td>
+      <td>${t.GF}</td><td>${t.GA}</td><td>${t.GD}</td><td>${t.pts}</td>`;
+    standingsTbody.appendChild(tr);
+  }
+}
+
+// при старте создаём дефолт, если нет данных
+db.ref("teams").once("value").then(s=>{if(!s.exists())db.ref("teams").set(defaults);});
+db.ref("results").once("value").then(s=>{if(!s.exists())db.ref("results").set({});});
+</script>
+</body>
+</html>
