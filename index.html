@@ -59,9 +59,9 @@
       <h3>Турнир</h3>
 
       <div class="row">
-        <div><div class="small">Саня</div><input id="team_sanya" type="text" placeholder="Команда Сани"></div>
-        <div><div class="small">Олег</div><input id="team_oleg" type="text" placeholder="Команда Олега"></div>
-        <div><div class="small">Дима</div><input id="team_dima" type="text" placeholder="Команда Димы"></div>
+        <div><div class="small">Саня</div><input id="team_sanya" type="text" placeholder="Команда Сани" value="Саня"></div>
+        <div><div class="small">Олег</div><input id="team_oleg" type="text" placeholder="Команда Олега" value="Олег"></div>
+        <div><div class="small">Дима</div><input id="team_dima" type="text" placeholder="Команда Димы" value="Дима"></div>
         <div style="margin-left:auto;">
           <button id="showTournamentDataBtn" class="btn-gray">Показать турнир</button>
           <button id="resetTournamentBtn" class="btn-red">Сбросить турнир</button>
@@ -87,18 +87,23 @@
   </main>
 
 <script>
-const firebaseConfig = {
-  apiKey: "ВАШ_API_KEY",
-  authDomain: "ВАШ_PROJECT.firebaseapp.com",
-  databaseURL: "https://ВАШ_PROJECT-default-rtdb.firebaseio.com",
-  projectId: "ВАШ_PROJECT",
-  storageBucket: "ВАШ_PROJECT.appspot.com",
-  messagingSenderId: "ВАШ_SENDER_ID",
-  appId: "ВАШ_APP_ID"
-};
+let firebaseConnected = false;
 
-firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
+try {
+  const firebaseConfig = {
+    apiKey: "ВАШ_API_KEY",
+    authDomain: "ВАШ_PROJECT.firebaseapp.com",
+    databaseURL: "https://ВАШ_PROJECT-default-rtdb.firebaseio.com",
+    projectId: "ВАШ_PROJECT",
+    storageBucket: "ВАШ_PROJECT.appspot.com",
+    messagingSenderId: "ВАШ_SENDER_ID",
+    appId: "ВАШ_APP_ID"
+  };
+  firebase.initializeApp(firebaseConfig);
+  firebaseConnected = true;
+} catch(e) {
+  console.warn("Firebase не подключён, работаем в оффлайн-режиме");
+}
 
 const players = ["sanya","oleg","dima"];
 const defaults = { sanya:"Саня", oleg:"Олег", dima:"Дима" };
@@ -110,16 +115,55 @@ const matches = [
 
 const clubs = ["Реал Мадрид","Барселона","Атлетико Мадрид","Манчестер Сити","Арсенал","Ливерпуль","Бавария","Байер","ПСЖ","Марсель","Ювентус","Милан"];
 
+const oddsTableBody=document.querySelector("#oddsTable tbody");
+const matchesTbody=document.querySelector("#matchesTable tbody");
+const standingsTbody=document.querySelector("#standingsTable tbody");
+
 const teamInputs={
   sanya:document.getElementById("team_sanya"),
   oleg:document.getElementById("team_oleg"),
   dima:document.getElementById("team_dima")
 };
 
-const oddsTableBody=document.querySelector("#oddsTable tbody");
-const matchesTbody=document.querySelector("#matchesTable tbody");
-const standingsTbody=document.querySelector("#standingsTable tbody");
+function show(id){document.getElementById(id).classList.remove("hidden");}
+function hide(id){document.getElementById(id).classList.add("hidden");}
+function toggle(id){document.getElementById(id).classList.toggle("hidden");}
 
 document.getElementById("showOddsBtn").onclick=()=>{show("oddsSection");hide("tournamentSection");};
 document.getElementById("showTableBtn").onclick=()=>{show("tournamentSection");hide("oddsSection");};
-document.getElementById("showTournamentDataBtn").onclick=
+document.getElementById("showTournamentDataBtn").onclick=()=>toggle("tournamentData");
+
+document.getElementById("randomTeamsBtn").onclick=()=>{
+  const shuffled=clubs.sort(()=>Math.random()-0.5);
+  const picks={ sanya:shuffled[0], oleg:shuffled[1], dima:shuffled[2] };
+  for(let p in picks) teamInputs[p].value=picks[p];
+  alert(`Случайные команды выбраны:\n\nСаня — ${picks.sanya}\nОлег — ${picks.oleg}\nДима — ${picks.dima}`);
+};
+
+document.getElementById("calcOddsBtn").onclick=()=>{
+  oddsTableBody.innerHTML="";
+  for(let m of matches){
+    const tr=document.createElement("tr");
+    tr.innerHTML=`<td>${m.home} — ${m.away}</td><td>${(Math.random()*2+2).toFixed(2)}</td><td>${(Math.random()*3).toFixed(2)}</td><td>${(Math.random()*2+1).toFixed(2)}</td>`;
+    oddsTableBody.appendChild(tr);
+  }
+};
+
+document.getElementById("randomOddsBtn").onclick=()=>{
+  oddsTableBody.innerHTML="";
+  for(let m of matches){
+    const tr=document.createElement("tr");
+    tr.innerHTML=`<td>${m.home} — ${m.away}</td><td>${(Math.random()*8+1).toFixed(2)}</td><td>${(Math.random()*8+1).toFixed(2)}</td><td>${(Math.random()*8+1).toFixed(2)}</td>`;
+    oddsTableBody.appendChild(tr);
+  }
+};
+
+document.getElementById("resetTournamentBtn").onclick=()=>{
+  matchesTbody.innerHTML="";
+  standingsTbody.innerHTML="";
+  hide("tournamentData");
+};
+
+</script>
+</body>
+</html>
